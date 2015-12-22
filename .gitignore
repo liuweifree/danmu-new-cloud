@@ -1,0 +1,9 @@
+.idea/
+target/
+logs/
+bower_components/
+.project
+.classpath
+.settings
+*.log
+*.iml
