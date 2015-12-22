@@ -23,7 +23,6 @@ spring:
           uri: https://github.com/liuweifree/danmu-new-cloud/tree/master/config-repo
           basedir: target/config
 
----
 spring:
   profiles: cloud
 eureka:
@@ -35,7 +34,6 @@ eureka:
     serviceUrl:
       defaultZone: ${vcap.services.${PREFIX:}eureka.credentials.uri:http://user:${eureka.password:}@${PREFIX:}eureka.${application.domain:cfapps.io}}/eureka/
 
----
 spring:
   profiles: lattice
   cloud:
