@@ -1,0 +1,187 @@
+<div class="container" ng-controller="dashboardCtl">
+  <div class="row" style="padding-top:5px;">
+    <div class="col-md-12">
+      <b>连接状态:</b>
+      <span ng-if="wsStatus==1">未连接</span>
+      <span class="text-success" ng-if="wsStatus==2">已连接</span>
+      <span class="text-danger" ng-if="wsStatus==3">已断开，请刷新页面重试</span>
+
+      <b>播放器列表:</b>
+      {{(playerIndexList && playerIndexList.length>0)?playerIndexList.join(' -> '):'无'}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <h3>
+        弹幕延迟列表
+        <div class="btn-group" role="group">
+          <button class="btn btn-sm btn-default" type="button" ng-click="setDelaySecond(false)">
+            <span class="glyphicon glyphicon-backward"></span>
+          </button>
+          <button type="button" class="btn btn-sm btn-default">延迟{{delaySecond}}秒</button>
+          <button class="btn btn-sm btn-default" type="button" ng-click="setDelaySecond(true)">
+            <span class="glyphicon glyphicon-forward"></span>
+          </button>
+        </div>
+
+        <div class="btn-group" role="group" aria-label="延时开关">
+          <button type="button" class="btn btn-sm btn-default" ng-class="{active:!isDelayEnable}"
+                  ng-click="setIsDelayEnable(false)">关闭延迟
+          </button>
+          <button type="button" class="btn btn-sm btn-default" ng-class="{active:isDelayEnable}"
+                  ng-click="setIsDelayEnable(true)">开启延迟
+          </button>
+        </div>
+        （{{danmuList.length}}条）
+        <div class="btn-group" role="group" aria-label="延时开关">
+          <button type="button" class="btn btn-sm btn-default" ng-class="{active:!testIsOpen}"
+                  ng-click="setTest(false)">关闭测试
+          </button>
+          <button type="button" class="btn btn-sm btn-default" ng-class="{active:testIsOpen}"
+                  ng-click="setTest(true)">开启测试
+          </button>
+        </div>
+      </h3>
+
+      <div id="www" style="height: 1000px; overflow-y: auto;">
+        <div style="position: fixed;bottom:20px;" ng-if="danmuList.length>10">
+          <button type="button" class="btn btn-info" ng-click="clearAndTurnUp()">
+            清理！(弹幕数{{danmuList.length}})
+          </button>
+        </div>
+        <table class="table table-hover">
+          <tr>
+            <th width="20%">发送时间</th>
+            <th>内容</th>
+            <th width="10%">剩余秒数</th>
+            <th width="12%"></th>
+          </tr>
+
+          <tr ng-repeat="danmu in danmuList">
+            <td>{{danmu.created | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+
+            <td ng-if="!danmu.isBlocked">{{danmu.msg}}</td>
+            <td ng-if="danmu.isBlocked">
+              <del> {{danmu.msg}}</del>
+            </td>
+            <td ng-if="!danmu.s||danmu.s>0">{{danmu.s}}秒</td>
+            <td ng-if="danmu.s<=0&&danmu.s>-10">已发送</td>
+            <td ng-if="danmu.s<=-10">未发送</td>
+            <td>
+              <span ng-if="danmu.isBlocked">已删除</span>
+              <button ng-if="(!danmu.s||danmu.s>0)&&!danmu.isBlocked" type="button"
+                      class="btn btn-default btn-sm" ng-click="setDanmuBlocked(danmu.id)">
+                删除
+              </button>
+            </td>
+          </tr>
+
+        </table>
+      </div>
+
+    </div>
+    <div class="col-sm-4">
+      <h3>
+        播放器控制
+        <div class="btn-group" role="group" aria-label="显示开关">
+          <button type="button" class="btn btn-sm btn-default" ng-class="{'active':playerStatus==0}"
+                  ng-click="setPlayerStatus(0)">关闭
+          </button>
+          <button type="button" class="btn btn-sm btn-default" ng-class="{'active':playerStatus==1}"
+                  ng-click="setPlayerStatus(1)">显示视频
+          </button>
+          <button type="button" class="btn btn-sm btn-default" ng-class="{'active':playerStatus==2}"
+                  ng-click="setPlayerStatus(2)">显示弹幕
+          </button>
+        </div>
+      </h3>
+
+      <h3>
+        弹幕发送
+        <span class="small" ng-if="!danmuMsg||danmuMsg.length<=40">还可输入{{40-danmuMsg.length}}个字</span>
+        <span class="small text-danger" ng-if="danmuMsg.length>40">已经超出{{danmuMsg.length-40}}个字</span>
+        <span class="small" ng-if="danmuSendStatus==1" style="color:green !important;">发送成功</span>
+        <span class="small" ng-if="danmuSendStatus==2" style="color:red !important;">发送失败</span>
+      </h3>
+
+      <div>
+        <div class="form-group">
+          <textarea class="form-control" rows="3" ng-model="danmuMsg" placeholder="请输入弹幕内容..."></textarea>
+        </div>
+        <div class="form-group">
+          <div>弹幕颜色：</div>
+          <div class="clearfix">
+            <span class="color" ng-style="{background:e}"
+                  ng-class="{active:color==$index}" ng-repeat="e in colors"
+                  ng-click="setEx($index)">
+              {{e}}
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <button type="button" class="btn btn-primary" ng-class="{disabled:danmuMsg.length>40}" ng-click="sendDm()">
+            发送
+          </button>
+
+        </div>
+      </div>
+
+      <h3>发送表情</h3>
+
+      <div>
+        <div class="clearfix">
+          <img ng-src="/expression/{{e}}" class="expression" ng-repeat="e in expressions"
+               ng-click="sendEx(e)"/>
+        </div>
+      </div>
+
+      <h3>
+        屏蔽词
+
+        <div class="btn-group" role="group" aria-label="屏蔽开关">
+          <button type="button" class="btn btn-sm btn-default" ng-class="{'active':!isBlockEnable}"
+                  ng-click="setIsBlockEnable(false)">关闭
+          </button>
+          <button type="button" class="btn btn-sm btn-default" ng-class="{'active':isBlockEnable}"
+                  ng-click="setIsBlockEnable(true)">开启
+          </button>
+        </div>
+        （{{filtered.length}}条）
+      </h3>
+
+
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="新增的屏蔽词" ng-model="blockKeyword">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" type="button" ng-click="addBlockKeyword()">
+            <span class="glyphicon glyphicon-plus"></span>
+            添加
+          </button>
+        </span>
+      </div>
+
+      <div style="height: 460px; overflow-y: auto;">
+        <table class="table table-hover" id="block-list">
+          <tr>
+            <th>#</th>
+            <th>屏蔽词</th>
+            <th></th>
+          </tr>
+
+          <tr ng-repeat="k in filtered = (blockKeywords|filter:{word:blockKeyword})">
+            <td>{{$index}}</td>
+            <td>{{k.word}}</td>
+            <td>
+              <button class="btn btn-default btn-sm" type="button" ng-click="delBlockKeyword(k.id,k.word)">
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </td>
+          </tr>
+
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>

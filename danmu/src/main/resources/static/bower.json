@@ -1,0 +1,22 @@
+{
+  "name": "y",
+  "main": "index.js",
+  "version": "0.0.0",
+  "authors": [
+    "zhangmengjie <zhangmengjie@acfun.tv>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angularjs": "~1.4.1",
+    "angular-bootstrap": "~0.13.1",
+    "angular-ui-router": "~0.2.15"
+  }
+}

@@ -1,0 +1,21 @@
+<div class="container" ng-controller="loginCtrl">
+  <div class="row">
+    <div class="col-sm-12">
+      <form role="form" ng-submit="login()"
+            style="border: 1px solid #E5E5E5;padding:30px;border-radius: 5px;margin: 10px auto;max-width:400px;">
+        <h1>登录</h1>
+
+        <div class="form-group">
+          <label for="username">用户名:</label>
+          <input type="text" class="form-control" id="username" placeholder="请输入账号" ng-model="credentials.name"/>
+        </div>
+        <div class="form-group">
+          <label for="password">密码:</label>
+          <input type="password" class="form-control" id="password" placeholder="请输入密码" ng-model="credentials.password"/>
+        </div>
+        <div ng-if="err" class="alert alert-danger" role="alert">用户名或密码错误，请重新输入</div>
+        <button type="submit" class="btn btn-primary">登录</button>
+      </form>
+    </div>
+  </div>
+</div>
