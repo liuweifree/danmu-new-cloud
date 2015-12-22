@@ -20,7 +20,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/liuweifree/danmu-new-cloud
+          uri: https://github.com/liuweifree/danmu-new-cloud/tree/master/config-repo
           basedir: target/config
 
 ---
